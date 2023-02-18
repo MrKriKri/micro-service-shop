@@ -20,9 +20,4 @@ import {OrderRepository} from "./order.repository";
   controllers: [OrderController],
   providers: [OrderService, OrderRepository],
 })
-export class OrderModule implements OnModuleInit{
-  onModuleInit(): any {
-    console.log(`Init Module Order`)
-  }
-
-}
+export class OrderModule {}

@@ -13,7 +13,7 @@ export abstract class BaseRepository<Document extends BaseSchema>{
   }
 
   async findAndUpdateOne(filter: FilterQuery<Document>, payload: UpdateQuery<Document>){
-    const doc = await this.model.findOneAndUpdate(filter, {...payload, updatedAt: new Date()})
+    const doc = await this.model.findOneAndUpdate(filter, {...payload, updatedAt: new Date()}, {new: true})
     if(!doc) throw new NotFoundException(`Not Found ${Model.collection.name}`)
     return doc
   }
