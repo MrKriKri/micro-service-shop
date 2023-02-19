@@ -1,16 +1,18 @@
-import {Body, Controller, Get, Inject, Param, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Param, Post, Put, Query, UseGuards} from '@nestjs/common';
 import {CreateProductRequestDto} from "./dto/create-product.request.dto";
 import {FilterQuery} from "mongoose";
 import {ClientTCP, MessagePattern} from "@nestjs/microservices";
 import {Product} from "./dto/product.dto";
+import {AuthGuard} from "../../guard/auth.guard";
 
 @Controller('product')
 export class ProductController {
   constructor(@Inject('PRODUCT_SERVICE')private readonly productService: ClientTCP) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   async createProduct(@Body() payload: CreateProductRequestDto){
-    return await this.productService.send({cmd: 'createProduct'},payload)
+    return this.productService.send({cmd: 'createProduct'}, payload);
   }
 
   @Get()
@@ -19,6 +21,7 @@ export class ProductController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard)
   async updateProduct(@Param() {id: _id}: {id: string}, @Body() payload: Omit<Product, '_id'|'updatedAt'>){
     return this.productService.send({cmd: 'updateProduct'}, {_id, ...payload});
   }

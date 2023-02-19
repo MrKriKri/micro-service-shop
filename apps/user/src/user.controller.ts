@@ -19,6 +19,11 @@ export class UserController {
     return await this.userService.getUser(query)
   }
 
+  @MessagePattern({cmd: 'getOne'})
+  async getOne(query: FilterQuery<User>){
+    return await this.userService.getOne(query)
+  }
+
   @MessagePattern({cmd: 'getMe'})
   async getMe({id}: {id: string}){
     return await this.userService.getMe(id)

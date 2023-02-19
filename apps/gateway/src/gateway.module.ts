@@ -5,6 +5,9 @@ import {ClientsModule, Transport} from "@nestjs/microservices";
 import {UserController} from "./user/user.controller";
 import {ProductController} from "./product/product.controller";
 import {OrderController} from "./order/order.controller";
+import {JwtService} from "@nestjs/jwt";
+import {AuthService} from "./auth/auth.service";
+import {AuthModule} from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -25,8 +28,9 @@ import {OrderController} from "./order/order.controller";
         options: { port: 3001 },
       },
     ]),
+    AuthModule
   ],
   controllers: [GatewayController, UserController, ProductController, OrderController],
-  providers: [GatewayService],
+  providers: [GatewayService , AuthService, JwtService],
 })
-export class GatewayModule {}
+export class GatewayModule{}
