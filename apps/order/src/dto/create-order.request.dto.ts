@@ -5,9 +5,12 @@ export class CreateOrderRequestDto{
   ref: string
 
   @IsArray()
-  product: string[]
+  product: { id: string, quantity: number}[]
 
   @IsNumber()
   discount: number
+
+  @IsString()
+  customer: string
 
 }

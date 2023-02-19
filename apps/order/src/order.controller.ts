@@ -1,26 +1,34 @@
-import {Body, Controller, Get, Param, Post, Put, Query} from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { OrderService } from './order.service';
-import {CreateOrderRequestDto} from "./dto/create-order.request.dto";
-import {FilterQuery, Types, Schema} from "mongoose";
+import { CreateOrderRequestDto } from './dto/create-order.request.dto';
+import {FilterQuery} from "mongoose";
 import {Order} from "./order.schema";
+import { ClientTCP, MessagePattern } from '@nestjs/microservices';
 
 
 @Controller()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    @Inject('PRODUCT_SERVICE') private readonly productService: ClientTCP,
+    private readonly orderService: OrderService
+  ) {}
 
-  @Post()
-  async createOrderController(@Body() payload: CreateOrderRequestDto){
-    return await this.orderService.createOrder(payload);
+  @MessagePattern({cmd: 'createOrder'})
+  async createOrderController(payload: CreateOrderRequestDto){
+    const orderCreated = await this.orderService.createOrder(payload);
+    this.productService.emit('createOrder', orderCreated)
+    return orderCreated
   }
 
-  @Get()
-  async getOrderController(@Query() query: FilterQuery<Order>){
+  @MessagePattern({cmd: 'getOrder'})
+  async getOrderController(query: FilterQuery<Order>){
     return await this.orderService.findOrder(query)
   }
 
-  @Put('cancel/:id')
-  async cancelOrderController(@Param() {id}: {id: string}){
-    return await this.orderService.cancelOrder(id)
+  @MessagePattern({cmd: 'cancelOrder'})
+  async cancelOrderController({id}: {id: string}){
+    const orderCancelled = await this.orderService.cancelOrder(id)
+    this.productService.emit('cancelOrder', orderCancelled)
+    return orderCancelled
   }
 }

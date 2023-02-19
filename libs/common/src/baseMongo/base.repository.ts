@@ -1,5 +1,5 @@
 import {BaseSchema} from "@app/common/baseMongo/base.schema";
-import {FilterQuery, Model, Types, UpdateQuery} from "mongoose";
+import { FilterQuery, Model, SortOrder, Types, UpdateQuery } from 'mongoose';
 import {NotFoundException} from "@nestjs/common";
 
 export abstract class BaseRepository<Document extends BaseSchema>{
@@ -18,8 +18,8 @@ export abstract class BaseRepository<Document extends BaseSchema>{
     return doc
   }
 
-  async find(filter: FilterQuery<Document>){
-    return (await this.model.find(filter))
+  async find(filter: FilterQuery<Document>, sort: {[key: string]: SortOrder} = {createdAt: -1}){
+    return (await this.model.find(filter).sort(sort))
   }
 
   async findOne(filter: FilterQuery<Document>){
