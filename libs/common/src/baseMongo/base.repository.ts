@@ -21,4 +21,8 @@ export abstract class BaseRepository<Document extends BaseSchema>{
   async find(filter: FilterQuery<Document>){
     return (await this.model.find(filter))
   }
+
+  async findOne(filter: FilterQuery<Document>){
+    return (await this.model.findOne(filter))
+  }
 }
