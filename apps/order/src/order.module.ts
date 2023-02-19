@@ -15,12 +15,20 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       envFilePath: './apps/order/.env',
     }),
     ClientsModule.register([
-      {name: 'PRODUCT_SERVICE', transport: Transport.TCP, options: {port: 3002} },
-      {name: 'USER_SERVICE', transport: Transport.TCP, options: {port: 3003} }
+      {
+        name: 'PRODUCT_SERVICE',
+        transport: Transport.TCP,
+        options: { port: 3002 },
+      },
+      {
+        name: 'USER_SERVICE',
+        transport: Transport.TCP,
+        options: { port: 3003 },
+      },
     ]),
-      MongoModule,
-      MongooseModule.forFeature([{name: 'orders', schema: OrderSchema}]),
-      ConfigModule
+    MongoModule,
+    ConfigModule,
+    MongooseModule.forFeature([{ name: 'orders', schema: OrderSchema }]),
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderRepository],
