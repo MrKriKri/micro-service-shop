@@ -1,3 +1,3 @@
 export const constant = {
-  secret: 'kuy'
+  secret: 'micro-service-shop'
 }
