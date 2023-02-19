@@ -1,35 +1,41 @@
-import {Body, Controller, Get, Param, Post, Put, Query} from '@nestjs/common';
+import {Controller} from '@nestjs/common';
 import { ProductService } from './product.service';
 import {CreateProductRequestDto} from "./dto/create-product.request.dto";
 import {FilterQuery} from "mongoose";
 import {Product} from "./product.schema";
+import {MessagePattern, EventPattern} from '@nestjs/microservices'
 
 @Controller()
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  async createProduct(@Body() payload: CreateProductRequestDto){
+  @MessagePattern({cmd: 'createProduct'})
+  async createProduct(payload: CreateProductRequestDto){
     return await this.productService.createProduct(payload)
   }
 
-  @Get()
-  async getProduct(@Query() query: FilterQuery<Product>){
+  @MessagePattern({cmd: 'getProduct'})
+  async getProduct(query: FilterQuery<Product>){
     return await this.productService.getProduct(query)
   }
 
-  @Put(':id')
-  async updateProduct(@Param() {id}: {id: string}, @Body() payload: Omit<Product, '_id'|'updatedAt'>){
-    return await this.productService.updateProduct(id, payload)
+  @MessagePattern({cmd: 'getOneProduct'})
+  async getOneProduct(query: FilterQuery<Product>){
+    return await this.productService.getOneProduct(query)
   }
 
-  @Post('createOrder')
-  async createOrder(@Param() {id}: {id: string},@Body() payload: {id: string, quantity: number}[]){
-    return await Promise.all(payload.map(async (product) => await this.productService.soldProduct(product.id, product.quantity)))
+  @MessagePattern({cmd: 'updateProduct'})
+  async updateProduct(payload: Omit<Product, 'updatedAt'>){
+    return await this.productService.updateProduct(payload._id.toString() , payload)
   }
 
-  @Post('cancelOrder')
-  async cancelOrder(@Param() {id}: {id: string},@Body() payload: {id: string, quantity: number}[]){
-    return await Promise.all(payload.map(async (product) => await this.productService.cancelOrder(product.id, product.quantity)))
+  @EventPattern('createOrder')
+  async createOrder(payload: {id: string, product: {id: string, quantity: number}[]}){
+    return await Promise.all(payload.product.map(async (product) => await this.productService.soldProduct(product.id, product.quantity)))
+  }
+
+  @EventPattern('cancelOrder')
+  async cancelOrder(payload: {id: string, product: {id: string, quantity: number}[]}){
+    return await Promise.all(payload.product.map(async (product) => await this.productService.cancelOrder(product.id, product.quantity)))
   }
 }

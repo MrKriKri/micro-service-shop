@@ -18,6 +18,10 @@ export class UserService {
     return await this.userRepository.find(query)
   }
 
+  async getOne(query: FilterQuery<User>){
+    return await this.userRepository.findOne(query)
+  }
+
   async getMe(id: string){
     return await this.userRepository.findOne({_id: new Types.ObjectId(id)})
   }

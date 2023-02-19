@@ -1,25 +1,31 @@
-import {Body, Controller, Get, Post, Query} from '@nestjs/common';
+import {Controller} from '@nestjs/common';
 import { UserService } from './user.service';
 import {FilterQuery} from "mongoose";
 import {User} from "./user.schema";
 import {RegisterRequestDto} from "./dto/register.request.dto";
+import {MessagePattern} from "@nestjs/microservices"
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async register(@Body() payload: RegisterRequestDto){
+  @MessagePattern({cmd: 'register'})
+  async register(payload: RegisterRequestDto){
     return await this.userService.createUser(payload)
   }
 
-  @Get()
-  async getUser(@Query() query: FilterQuery<User>){
+  @MessagePattern({cmd: 'getUser'})
+  async getUser(query: FilterQuery<User>){
     return await this.userService.getUser(query)
   }
 
-  @Get('/me')
-  async getMe(){
-    return await this.userService.getMe(`63f1a4819ca6d9a2ce8f3315`)
+  @MessagePattern({cmd: 'getOne'})
+  async getOne(query: FilterQuery<User>){
+    return await this.userService.getOne(query)
+  }
+
+  @MessagePattern({cmd: 'getMe'})
+  async getMe({id}: {id: string}){
+    return await this.userService.getMe(id)
   }
 }

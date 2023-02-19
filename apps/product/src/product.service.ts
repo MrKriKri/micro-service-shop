@@ -28,4 +28,8 @@ export class ProductService {
   async getProduct(query: FilterQuery<Product>){
     return await this.productRepository.find(query)
   }
+
+  async getOneProduct(query: FilterQuery<Product>){
+    return await this.productRepository.findOne(query)
+  }
 }

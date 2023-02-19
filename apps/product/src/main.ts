@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { ProductModule } from './product.module';
-import {ValidationPipe} from "@nestjs/common";
+import {Transport} from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProductModule);
-  app.useGlobalPipes(new ValidationPipe())
-  await app.listen(3002);
+  const app = await NestFactory.createMicroservice(ProductModule, {transport: Transport.TCP, options: {port: 3002}})
+  await app.listen();
 }
 bootstrap();
