@@ -21,7 +21,7 @@ export class ProductController {
 
   @MessagePattern({cmd: 'getOneProduct'})
   async getOneProduct(query: FilterQuery<Product>){
-    return await this.productService.getProduct(query)
+    return await this.productService.getOneProduct(query)
   }
 
   @MessagePattern({cmd: 'updateProduct'})

@@ -18,8 +18,18 @@ export class OrderService {
   ) {}
 
   async createOrder(payload: CreateOrderRequestDto){
-    const product = await Promise.all(payload.product.map( async (_product) => ({..._product,product: await lastValueFrom(this.productService.send<Product>('getOneProduct', {_id: _product.id}))})))
-    const customer = await lastValueFrom(this.userService.send<User>('getUser', {_id: payload.customer}))
+    const product = await Promise.all(
+        payload.product.map(async (_product) =>
+        {
+          return  {
+          ..._product,
+          product: await lastValueFrom(
+              this.productService.send<Product>({cmd: 'getOneProduct'}, {_id: _product.id})
+          )}
+        }
+        )
+    )
+    const customer = await lastValueFrom(this.userService.send<User>({cmd: 'getMe'}, {id: payload.customer}))
     const total = product.reduce((previousValue, currentValue)=> (previousValue+currentValue.product.price) , 0)
     const netTotal = total - payload.discount
     return await this.orderRepository.create({...payload, product: product, total, netTotal, customer, status: OrderStatus.PENDING})

@@ -14,9 +14,9 @@ export class OrderController {
   ) {}
 
   @MessagePattern({cmd: 'createOrder'})
-  async createOrderController(payload: CreateOrderRequestDto){
+  async createOrderController(payload: any){
     const orderCreated = await this.orderService.createOrder(payload);
-    this.productService.emit('createOrder', orderCreated)
+    this.productService.emit('createOrder', {id: orderCreated._id,product: orderCreated.product})
     return orderCreated
   }
 
@@ -28,7 +28,7 @@ export class OrderController {
   @MessagePattern({cmd: 'cancelOrder'})
   async cancelOrderController({id}: {id: string}){
     const orderCancelled = await this.orderService.cancelOrder(id)
-    this.productService.emit('cancelOrder', orderCancelled)
+    this.productService.emit('cancelOrder', {id: orderCancelled._id,product: orderCancelled.product})
     return orderCancelled
   }
 }

@@ -20,7 +20,7 @@ export class UserController {
   }
 
   @MessagePattern({cmd: 'getMe'})
-  async getMe(id: string){
+  async getMe({id}: {id: string}){
     return await this.userService.getMe(id)
   }
 }
